@@ -1,21 +1,33 @@
-
+/* Add this to your CSS file or style block */
 .game-board {
   display: grid;
   justify-content: center;
   grid-template-columns: repeat(18, 40px);
   grid-template-rows: repeat(18, 40px);
 }
+
 .cell {
+  position: relative;
   width: 40px;
   height: 40px;
   border: 1px solid #ccc;
+  overflow: hidden; /* Hide overflowing content */
 }
+
+/*.pokemon-image {
+  width: 40px; 
+  height: 40px;
+  object-fit: cover;
+} */
+
 .empty {
   background-color: #fff;
 }
+
 .snake {
-  background-color: #00f;
+  /* background-color: #00f; */
 }
+
 .food {
   background-color: #f00;
 }

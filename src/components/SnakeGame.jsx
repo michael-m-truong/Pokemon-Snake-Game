@@ -7,6 +7,29 @@ const generateFood = () => {
   return { x, y };
 };
 
+const generateRandomPokemonOrder = () => {
+  // Create an array of numbers from 1 to 649
+  const numbers = Array.from({ length: 649 }, (_, index) => index + 1);
+
+  // Shuffle the array
+  for (let i = numbers.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+  }
+
+  // Ensure either 0196 or 0143 is the first element
+  if (Math.random() < 0.5) {
+    // If 0143 is not the first element, swap it with the second element
+    const indexOf0143 = numbers.indexOf(143);
+    [numbers[0], numbers[indexOf0143]] = [numbers[indexOf0143], numbers[0]];
+  }
+
+  // Create a stack using the shuffled array
+  const stack = numbers;
+
+  return stack;
+};
+
 const SnakeGame = () => {
   const initialSnakeLength = 1;
   const [snake, setSnake] = useState(Array.from({ length: initialSnakeLength }, (_, index) => ({ x: index, y: 0 })));
@@ -14,7 +37,11 @@ const SnakeGame = () => {
   const [directionQueue, setDirectionQueue] = useState([]);
   const [gameOver, setGameOver] = useState(false);
 
+  const pokemonStack = useRef(generateRandomPokemonOrder())
+
   const currentDirectionRef = useRef('RIGHT');
+  const currentPokemonRef = useRef([]);
+  
 
   useEffect(() => {
     if (gameOver) {
@@ -25,7 +52,6 @@ const SnakeGame = () => {
       currentDirectionRef.current = directionQueue.length > 0 ? directionQueue.shift() : currentDirectionRef.current;
 
       const currentDirection = currentDirectionRef.current;
-      
 
       if (currentDirection) {
         setSnake((prevSnake) => {
@@ -126,7 +152,17 @@ const SnakeGame = () => {
         } else if (food.x === x && food.y === y) {
           cellType = 'food';
         }
-        board.push(<div key={`${x}-${y}`} className={`cell ${cellType}`} />);
+        if (cellType === 'snake') {
+          // If it's a snake cell, use the default Pokémon image URL
+          board.push(
+            <div key={`${x}-${y}`} className={cellType}>
+              <img class="pokemon_img" src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/649.gif"} alt={`Pokemon`} />
+            </div>
+          );
+        } else {
+          // Otherwise, use the regular content
+          board.push(<div key={`${x}-${y}`} className={`cell ${cellType}`} />);
+        }
       }
     }
     return board;
