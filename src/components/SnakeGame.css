@@ -1,0 +1,20 @@
+
+.game-board {
+  display: grid;
+  grid-template-columns: repeat(18, 20px);
+  grid-template-rows: repeat(18, 20px);
+}
+.cell {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #ccc;
+}
+.empty {
+  background-color: #fff;
+}
+.snake {
+  background-color: #00f;
+}
+.food {
+  background-color: #f00;
+}
