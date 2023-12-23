@@ -8,40 +8,40 @@ const generateFood = () => {
 };
 
 const generateRandomPokemonOrder = () => {
-  // Create an array of numbers from 1 to 649
   const numbers = Array.from({ length: 649 }, (_, index) => index + 1);
 
-  // Shuffle the array
   for (let i = numbers.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
   }
 
-  // Ensure either 0196 or 0143 is the first element
   if (Math.random() < 0.5) {
-    // If 0143 is not the first element, swap it with the second element
     const indexOf0143 = numbers.indexOf(143);
     [numbers[0], numbers[indexOf0143]] = [numbers[indexOf0143], numbers[0]];
   }
 
-  // Create a stack using the shuffled array
   const stack = numbers;
 
   return stack;
 };
 
 const SnakeGame = () => {
+  const pokemonStack = useRef(generateRandomPokemonOrder());
   const initialSnakeLength = 1;
-  const [snake, setSnake] = useState(Array.from({ length: initialSnakeLength }, (_, index) => ({ x: index, y: 0 })));
+  const [snake, setSnake] = useState(
+    Array.from({ length: initialSnakeLength }, (_, index) => ({
+      x: index,
+      y: 0,
+      pokedexId: pokemonStack.current.pop(), // Set the initial pokedexId
+    }))
+  );
+
   const [food, setFood] = useState(() => generateFood());
   const [directionQueue, setDirectionQueue] = useState([]);
   const [gameOver, setGameOver] = useState(false);
 
-  const pokemonStack = useRef(generateRandomPokemonOrder())
-
   const currentDirectionRef = useRef('RIGHT');
   const currentPokemonRef = useRef([]);
-  
 
   useEffect(() => {
     if (gameOver) {
@@ -80,10 +80,18 @@ const SnakeGame = () => {
 
           if (checkFoodCollision(newSnake[0])) {
             setFood(generateFood());
-            return [...newSnake, { x: -1, y: -1 }];
+            const newPokedexId = pokemonStack.current.pop();
+            currentPokemonRef.current.push(newPokedexId);
+            return [...newSnake, { x: -1, y: -1, pokedexId: newPokedexId }];
           }
 
-          return newSnake;
+          return newSnake.map((part, index) => {
+            // Ensure each snake part has a unique pokedexId
+            if (index === 0) {
+              return part;
+            }
+            return { ...part, pokedexId: currentPokemonRef.current[index - 1] };
+          });
         });
       }
     };
@@ -147,16 +155,27 @@ const SnakeGame = () => {
     for (let y = 0; y < 18; y++) {
       for (let x = 0; x < 18; x++) {
         let cellType = 'empty';
+        let pokedexId = null;
+
         if (snake.some((part) => part.x === x && part.y === y)) {
           cellType = 'snake';
+          const currentPart = snake.find((part) => part.x === x && part.y === y);
+          if (currentPart) {
+            pokedexId = currentPart.pokedexId;
+          }
         } else if (food.x === x && food.y === y) {
           cellType = 'food';
         }
+
         if (cellType === 'snake') {
           // If it's a snake cell, use the default Pokémon image URL
           board.push(
             <div key={`${x}-${y}`} className={cellType}>
-              <img class="pokemon_img" src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/649.gif"} alt={`Pokemon`} />
+              <img
+                className="pokemon_img"
+                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/${pokedexId}.gif`}
+                alt={`Pokemon`}
+              />
             </div>
           );
         } else {
