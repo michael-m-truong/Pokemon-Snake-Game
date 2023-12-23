@@ -15,15 +15,22 @@ const generateRandomPokemonOrder = () => {
     [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
   }
 
+  // Ensure either 163 or 196 is last or second to last with a 50/50 chance
   if (Math.random() < 0.5) {
-    const indexOf0143 = numbers.indexOf(143);
-    [numbers[0], numbers[indexOf0143]] = [numbers[indexOf0143], numbers[0]];
+    // If 196 is not the last element, swap it with the last element
+    const indexOf196 = numbers.indexOf(196);
+    [numbers[numbers.length - 1], numbers[indexOf196]] = [numbers[indexOf196], numbers[numbers.length - 1]];
+  } else {
+    // If 163 is not the last element, swap it with the last element
+    const indexOf143 = numbers.indexOf(143);
+    [numbers[numbers.length - 1], numbers[indexOf143]] = [numbers[indexOf143], numbers[numbers.length - 1]];
   }
 
   const stack = numbers;
 
   return stack;
 };
+
 
 const SnakeGame = () => {
   const pokemonStack = useRef(generateRandomPokemonOrder());
