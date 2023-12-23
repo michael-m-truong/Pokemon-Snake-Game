@@ -18,6 +18,10 @@ const SnakeGame = () => {
   const gameRef = useRef();
 
   useEffect(() => {
+    if (gameOver) {
+      return; // If the game is over, do nothing
+    }
+
     const moveSnake = () => {
       const newSnake = snake.map((part, index) => {
         if (index === 0) {
@@ -66,9 +70,6 @@ const SnakeGame = () => {
 
     const gameInterval = setInterval(() => {
       moveSnake();
-      if (gameOver) {
-        clearInterval(gameInterval);
-      }
     }, 100);
 
     return () => {
