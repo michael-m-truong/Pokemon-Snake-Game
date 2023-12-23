@@ -11,11 +11,10 @@ const SnakeGame = () => {
   const initialSnakeLength = 1;
   const [snake, setSnake] = useState(Array.from({ length: initialSnakeLength }, (_, index) => ({ x: index, y: 0 })));
   const [food, setFood] = useState(() => generateFood());
-  const [direction, setDirection] = useState('RIGHT');
-  const directionRef = useRef(direction);
+  const [directionQueue, setDirectionQueue] = useState([]);
   const [gameOver, setGameOver] = useState(false);
 
-  const gameRef = useRef();
+  const currentDirectionRef = useRef('RIGHT');
 
   useEffect(() => {
     if (gameOver) {
@@ -23,34 +22,43 @@ const SnakeGame = () => {
     }
 
     const moveSnake = () => {
-      const newSnake = snake.map((part, index) => {
-        if (index === 0) {
-          switch (direction) {
-            case 'UP':
-              return { ...part, y: part.y - 1 };
-            case 'DOWN':
-              return { ...part, y: part.y + 1 };
-            case 'LEFT':
-              return { ...part, x: part.x - 1 };
-            case 'RIGHT':
-              return { ...part, x: part.x + 1 };
-            default:
-              return part;
+      currentDirectionRef.current = directionQueue.length > 0 ? directionQueue.shift() : currentDirectionRef.current;
+
+      const currentDirection = currentDirectionRef.current;
+      
+
+      if (currentDirection) {
+        setSnake((prevSnake) => {
+          const newSnake = prevSnake.map((part, index) => {
+            if (index === 0) {
+              switch (currentDirection) {
+                case 'UP':
+                  return { ...part, y: part.y - 1 };
+                case 'DOWN':
+                  return { ...part, y: part.y + 1 };
+                case 'LEFT':
+                  return { ...part, x: part.x - 1 };
+                case 'RIGHT':
+                  return { ...part, x: part.x + 1 };
+                default:
+                  return part;
+              }
+            } else {
+              return prevSnake[index - 1];
+            }
+          });
+
+          if (checkCollision(newSnake[0])) {
+            setGameOver(true);
           }
-        } else {
-          return snake[index - 1];
-        }
-      });
 
-      setSnake(newSnake);
+          if (checkFoodCollision(newSnake[0])) {
+            setFood(generateFood());
+            return [...newSnake, { x: -1, y: -1 }];
+          }
 
-      if (checkCollision(newSnake[0])) {
-        setGameOver(true);
-      }
-
-      if (checkFoodCollision(newSnake[0])) {
-        setFood(generateFood());
-        setSnake([...newSnake, { x: -1, y: -1 }]);
+          return newSnake;
+        });
       }
     };
 
@@ -75,39 +83,31 @@ const SnakeGame = () => {
     return () => {
       clearInterval(gameInterval);
     };
-  }, [snake, direction, food, gameOver]);
+  }, [snake, directionQueue, food, gameOver, currentDirectionRef]);
 
   const handleKeyPress = (event) => {
+    let newDirection = null;
     switch (event.key) {
       case 'ArrowUp':
-        if (directionRef.current !== 'DOWN') {
-          setDirection('UP');
-        }
+        newDirection = 'UP';
         break;
       case 'ArrowDown':
-        if (directionRef.current !== 'UP') {
-          setDirection('DOWN');
-        }
+        newDirection = 'DOWN';
         break;
       case 'ArrowLeft':
-        if (directionRef.current !== 'RIGHT') {
-          setDirection('LEFT');
-        }
+        newDirection = 'LEFT';
         break;
       case 'ArrowRight':
-        if (directionRef.current !== 'LEFT') {
-          setDirection('RIGHT');
-        }
+        newDirection = 'RIGHT';
         break;
       default:
         break;
     }
-  };
 
-  useEffect(() => {
-    directionRef.current = direction;
-  }, [direction]);
-  
+    if (newDirection) {
+      setDirectionQueue((prevQueue) => [...prevQueue, newDirection]);
+    }
+  };
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
