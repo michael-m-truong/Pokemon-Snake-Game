@@ -1,12 +1,13 @@
 
 .game-board {
   display: grid;
-  grid-template-columns: repeat(18, 20px);
-  grid-template-rows: repeat(18, 20px);
+  justify-content: center;
+  grid-template-columns: repeat(18, 40px);
+  grid-template-rows: repeat(18, 40px);
 }
 .cell {
-  width: 20px;
-  height: 20px;
+  width: 40px;
+  height: 40px;
   border: 1px solid #ccc;
 }
 .empty {
