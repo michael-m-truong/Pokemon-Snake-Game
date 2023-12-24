@@ -67,18 +67,18 @@ const SnakeGame = () => {
       pokedexId: pokemonStack.current.pop(),
     })));
     setFood(generateFood());
-    setDirectionQueue([]);
+    setDirectionQueue(["RIGHT"]);
     setGameOver(false);
     setScore(0);
     setIsPlaying(false)
   };
 
   useEffect(() => {
-    console.log(gameOver, isPlaying)
     if (gameOver || !isPlaying) {
       return; // If the game is over, do nothing
     }
 
+    console.log(directionQueue.length)
     const moveSnake = () => {
       currentDirectionRef.current = directionQueue.length > 0 ? directionQueue.shift() : currentDirectionRef.current;
 
@@ -153,28 +153,58 @@ const SnakeGame = () => {
   }, [snake, directionQueue, food, gameOver, currentDirectionRef, isPlaying]);
 
   const handleKeyPress = (event) => {
-    let newDirection = null;
-    switch (event.key) {
-      case 'ArrowUp':
-        newDirection = 'UP';
-        break;
-      case 'ArrowDown':
-        newDirection = 'DOWN';
-        break;
-      case 'ArrowLeft':
-        newDirection = 'LEFT';
-        break;
-      case 'ArrowRight':
-        newDirection = 'RIGHT';
-        break;
-      default:
-        break;
-    }
-
-    if (newDirection) {
-      setDirectionQueue((prevQueue) => [...prevQueue, newDirection]);
-    }
+    setDirectionQueue((prevQueue) => {
+      // Check if the queue is already at its maximum length
+      if (prevQueue.length >= 2) {
+        return prevQueue; // No need to update the queue
+      }
+  
+      let newDirection = null;
+      switch (event.key) {
+        case 'ArrowUp':
+          newDirection = 'UP';
+          break;
+        case 'ArrowDown':
+          newDirection = 'DOWN';
+          break;
+        case 'ArrowLeft':
+          newDirection = 'LEFT';
+          break;
+        case 'ArrowRight':
+          newDirection = 'RIGHT';
+          break;
+        default:
+          break;
+      }
+  
+      console.log(newDirection, currentDirectionRef.current);
+      console.log(prevQueue.length)
+  
+      // Check if the new direction is valid (not opposite or same as the current direction)
+      if (newDirection && !isOppositeDirection(newDirection, currentDirectionRef.current) || prevQueue.length == 1) {
+        // Check if the new direction is the same as the last direction in the queue
+        const isSameDirection = prevQueue.length >= 1 && newDirection === prevQueue[prevQueue.length - 1];
+  
+        // Update the queue to have at most two directions
+        const newQueue = isSameDirection ? prevQueue : [...prevQueue, newDirection].slice(-2);
+        return newQueue;
+      }
+  
+      return prevQueue; // If no valid new direction, return the current queue
+    });
   };
+  
+  
+  const isOppositeDirection = (newDirection, currentDirection) => {
+    return (
+      (newDirection === 'UP' && currentDirection === 'DOWN') ||
+      (newDirection === 'DOWN' && currentDirection === 'UP') ||
+      (newDirection === 'LEFT' && currentDirection === 'RIGHT') ||
+      (newDirection === 'RIGHT' && currentDirection === 'LEFT')
+    );
+  };
+  
+  
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
@@ -248,14 +278,13 @@ const SnakeGame = () => {
       <div className="main-container">
         <div className="main-menu">
         <button onClick={handleRestart} disabled={!gameOver}>Restart</button>
-        <div className="score">Score: {score}</div>
         <button onClick={handlePlay} disabled={isPlaying}>Play</button>
         </div>
         <div className="game-board">
           {renderGameBoard()}
         </div>
         <div className="score-menu">
-          <div>Score: {score}</div>
+          <h1>Score: {score}</h1>
         </div>
       </div>
     </div>
