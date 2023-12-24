@@ -2,8 +2,8 @@
 .game-board {
   display: grid;
   justify-content: center;
-  grid-template-columns: repeat(8, 80px);
-  grid-template-rows: repeat(8,80px);
+  grid-template-columns: repeat(10, 80px);
+  grid-template-rows: repeat(10,80px);
 }
 
 .cell {

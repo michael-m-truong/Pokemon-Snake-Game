@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './SnakeGame.css';
+import treeImage from '../assets/imgs/tree.png'
 
 const generateFood = () => {
-  const x = Math.floor(Math.random() * 8);
-  const y = Math.floor(Math.random() * 8);
+  const x = Math.floor(Math.random() * 8) + 1; // Generates a random number between 1 and 8 (inclusive)
+  const y = Math.floor(Math.random() * 8) + 1;
   return { x, y };
 };
 
@@ -37,8 +38,8 @@ const SnakeGame = () => {
   const initialSnakeLength = 1;
   const [snake, setSnake] = useState(
     Array.from({ length: initialSnakeLength }, (_, index) => ({
-      x: index,
-      y: 0,
+      x: index + 1,
+      y: 0 + 1,
       pokedexId: pokemonStack.current.pop(), // Set the initial pokedexId
     }))
   );
@@ -83,6 +84,7 @@ const SnakeGame = () => {
 
           if (checkCollision(newSnake[0])) {
             setGameOver(true);
+            clearInterval(gameInterval);
           }
 
           if (checkFoodCollision(newSnake[0])) {
@@ -105,10 +107,10 @@ const SnakeGame = () => {
 
     const checkCollision = (head) => {
       return (
-        head.x < 0 ||
-        head.y < 0 ||
-        head.x >= 18 ||
-        head.y >= 18 ||
+        head.x < 1 ||
+        head.y < 1 ||
+        head.x >= 10 ||
+        head.y >= 10 ||
         snake.slice(1).some((part) => part.x === head.x && part.y === head.y)
       );
     };
@@ -159,8 +161,8 @@ const SnakeGame = () => {
 
   const renderGameBoard = () => {
     const board = [];
-    for (let y = 0; y < 8; y++) {
-      for (let x = 0; x < 8; x++) {
+    for (let y = 0; y < 10; y++) {
+      for (let x = 0; x < 10; x++) {
         let cellType = 'empty';
         let pokedexId = null;
 
@@ -187,7 +189,18 @@ const SnakeGame = () => {
           );
         } else {
           // Otherwise, use the regular content
-          board.push(<div key={`${x}-${y}`} className={`cell ${cellType}`} />);
+          if (x == 0 || x == 9 || y == 0 || y == 9) {
+            board.push(<div key={`${x}-${y}`} className={"empty"}>
+              <img
+                className="pokemon_img"
+                src={treeImage}
+                alt={`Pokemon`}
+              />
+            </div>)
+          }
+          else {
+            board.push(<div key={`${x}-${y}`} className={`cell ${cellType}`} />);
+          }
         }
       }
     }
