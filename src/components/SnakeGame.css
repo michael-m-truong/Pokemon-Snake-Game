@@ -36,3 +36,61 @@
 .food {
   /* background-color: #f00; */
 }
+.game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.main-container {
+  display: flex;
+}
+
+.main-menu {
+  width: 200px; /* Adjust the width as needed */
+}
+
+.score-menu {
+  width: 200px; /* Adjust the width as needed */
+}
+
+/* Add other existing styles here */
+
+button {
+  border-radius: 100px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1.2em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: rgb(198, 111, 111)
+}
+button:focus,
+button:focus-visible {
+  /* outline: 4px auto -webkit-focus-ring-color;
+  background-color: rgb(198, 111, 111) */
+}
+
+.card {
+  padding: 2em;
+}
+
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #d0d0d0;
+  }
+}

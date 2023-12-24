@@ -48,12 +48,34 @@ const SnakeGame = () => {
   const [food, setFood] = useState(() => generateFood());
   const [directionQueue, setDirectionQueue] = useState([]);
   const [gameOver, setGameOver] = useState(false);
+  const [score, setScore] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const currentDirectionRef = useRef('RIGHT');
   const currentPokemonRef = useRef([]);
 
+  const handlePlay = () => {
+    setIsPlaying(true);
+  };
+
+  
+  const handleRestart = () => {
+    pokemonStack.current = generateRandomPokemonOrder()
+    setSnake(Array.from({ length: initialSnakeLength }, (_, index) => ({
+      x: index + 1,
+      y: 0 + 1,
+      pokedexId: pokemonStack.current.pop(),
+    })));
+    setFood(generateFood());
+    setDirectionQueue([]);
+    setGameOver(false);
+    setScore(0);
+    setIsPlaying(false)
+  };
+
   useEffect(() => {
-    if (gameOver) {
+    console.log(gameOver, isPlaying)
+    if (gameOver || !isPlaying) {
       return; // If the game is over, do nothing
     }
 
@@ -90,6 +112,7 @@ const SnakeGame = () => {
 
           if (checkFoodCollision(newSnake[0])) {
             setFood(generateFood());
+            setScore((prevScore) => prevScore + 1);
             const newPokedexId = pokemonStack.current.pop();
             currentPokemonRef.current.push(newPokedexId);
             return [...newSnake, { x: -1, y: -1, pokedexId: newPokedexId }];
@@ -127,7 +150,7 @@ const SnakeGame = () => {
     return () => {
       clearInterval(gameInterval);
     };
-  }, [snake, directionQueue, food, gameOver, currentDirectionRef]);
+  }, [snake, directionQueue, food, gameOver, currentDirectionRef, isPlaying]);
 
   const handleKeyPress = (event) => {
     let newDirection = null;
@@ -221,11 +244,23 @@ const SnakeGame = () => {
   };
 
   return (
-    <div>
-      <h1>{gameOver ? 'Game Over' : 'Snake Game'}</h1>
-      <div className="game-board">{renderGameBoard()}</div>
+    <div className="game-container">
+      <div className="main-container">
+        <div className="main-menu">
+        <button onClick={handleRestart} disabled={!gameOver}>Restart</button>
+        <div className="score">Score: {score}</div>
+        <button onClick={handlePlay} disabled={isPlaying}>Play</button>
+        </div>
+        <div className="game-board">
+          {renderGameBoard()}
+        </div>
+        <div className="score-menu">
+          <div>Score: {score}</div>
+        </div>
+      </div>
     </div>
   );
+  
 };
 
 export default SnakeGame;
