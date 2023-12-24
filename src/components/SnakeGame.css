@@ -10,7 +10,7 @@
   position: relative;
   width: 80px;
   height: 80px;
-  border: 1px solid #ccc;
+  /* border: 1px solid #ccc; */
   overflow: hidden; /* Hide overflowing content */
 }
 
@@ -34,5 +34,5 @@
 }
 
 .food {
-  background-color: #f00;
+  /* background-color: #f00; */
 }

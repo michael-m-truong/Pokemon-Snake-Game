@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './SnakeGame.css';
 import treeImage from '../assets/imgs/tree.png'
+import pokeball from "../assets/imgs/pokeball.png"
 
 const generateFood = () => {
   const x = Math.floor(Math.random() * 8) + 1; // Generates a random number between 1 and 8 (inclusive)
@@ -109,8 +110,8 @@ const SnakeGame = () => {
       return (
         head.x < 1 ||
         head.y < 1 ||
-        head.x >= 10 ||
-        head.y >= 10 ||
+        head.x > 8 ||
+        head.y > 8 ||
         snake.slice(1).some((part) => part.x === head.x && part.y === head.y)
       );
     };
@@ -187,7 +188,19 @@ const SnakeGame = () => {
               />
             </div>
           );
-        } else {
+        }
+        else if (cellType == "food") {
+          board.push(
+            <div key={`${x}-${y}`} className={cellType}>
+              <img
+                className="pokemon_img"
+                src={pokeball}
+                alt={`Pokemon`}
+              />
+            </div>
+          );
+        } 
+        else {
           // Otherwise, use the regular content
           if (x == 0 || x == 9 || y == 0 || y == 9) {
             board.push(<div key={`${x}-${y}`} className={"empty"}>
