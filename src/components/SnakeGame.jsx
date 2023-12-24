@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import './SnakeGame.css';
 
 const generateFood = () => {
-  const x = Math.floor(Math.random() * 18);
-  const y = Math.floor(Math.random() * 18);
+  const x = Math.floor(Math.random() * 8);
+  const y = Math.floor(Math.random() * 8);
   return { x, y };
 };
 
@@ -119,7 +119,7 @@ const SnakeGame = () => {
 
     const gameInterval = setInterval(() => {
       moveSnake();
-    }, 100);
+    }, 500);
 
     return () => {
       clearInterval(gameInterval);
@@ -159,8 +159,8 @@ const SnakeGame = () => {
 
   const renderGameBoard = () => {
     const board = [];
-    for (let y = 0; y < 18; y++) {
-      for (let x = 0; x < 18; x++) {
+    for (let y = 0; y < 8; y++) {
+      for (let x = 0; x < 8; x++) {
         let cellType = 'empty';
         let pokedexId = null;
 
